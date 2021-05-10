@@ -1,0 +1,7 @@
+fastapi
+mangum
+database
+databases
+httpx
+aiosqlite
+uvicorn

@@ -1,3 +1,4 @@
+# importing dependancies & other files
 from fastapi import FastAPI
 from typing import List, Optional
 import databases
@@ -7,7 +8,7 @@ from pydantic import BaseModel, Field
 from fastapi import APIRouter
 import httpx
 
-
+# Initialize database
 DATABASE_URL = "sqlite:///./servicenow.db"
 
 
@@ -21,7 +22,7 @@ engine = sqlalchemy.create_engine(
     DATABASE_URL, connect_args={"check_same_thread": False}
 )
 
-
+# Create table
 incidents = sqlalchemy.Table(
 
     "incidents",
@@ -42,11 +43,13 @@ incidents = sqlalchemy.Table(
 
 )
 
-
+# Start engine
 engine = sqlalchemy.create_engine(
     DATABASE_URL, connect_args={"check_same_thread": False}
 )
 metadata.create_all(engine)
+
+# create table models
 
 
 class Incident(BaseModel):
@@ -82,6 +85,8 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
+# Create routes
+
 
 @router.get("/incidents", response_model=List[Incident])
 async def read_incidents():
@@ -95,6 +100,8 @@ async def remove_incident(number: str):
     await database.execute(query)
     return {incidents.dict()}
     # return {**incident.dict(), "id": last_record_id}
+
+# Make API call to Service Now API and post to DB
 
 
 @router.post('/incidents', response_model=Incident)
